@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3308/cloudblog_blog?serverTimezone=GMT
+    hikari:
+      username: root
+      password: 116924
+      #com.mysql.cj.jdbc.Driver 适合用于6.0+
+      #com.mysql.jdbc.Driver 适合 <=5.x
+      driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+#        namespace:
+#          d6138e58-9c53-47bc-8930-953b3844a570
+#        cluster-name: NJ
+  application:
+    name: blog-service
+server:
+  port: 8082
+
+#细粒度配置——随机选择实例user-service
+#user-service:
+#  ribbon:
+#ribbon:
+#  eager-load:
+#    enabled: true
+#    clients: user-service
+#    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule

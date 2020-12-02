@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.cloudblogblog.dao.blog.BlogMapper">
+  <resultMap id="BaseResultMap" type="com.zzy.cloudblogblog.entity.blog.Blog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="blog_id" jdbcType="INTEGER" property="blogId"/>
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="type_id" jdbcType="INTEGER" property="typeId" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="first_picture" jdbcType="VARCHAR" property="firstPicture" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="views" jdbcType="INTEGER" property="views" />
+    <result column="sharement" jdbcType="BIT" property="sharement" />
+    <result column="commentabled" jdbcType="BIT" property="commentabled" />
+    <result column="published" jdbcType="BIT" property="published" />
+    <result column="recommend" jdbcType="BIT" property="recommend" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+</mapper>
