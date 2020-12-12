@@ -11,14 +11,53 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
-#        namespace:
+    stream:
+      rocketmq:
+        binder:
+          name-server: 127.0.0.1:9876
+        bindings:
+          output:
+            producer:
+              group: blog2user
+              transactional: true
+      bindings:
+        output:
+          destination: blog-user-topic
+
+
+#        group: blog-user-binding
+  #    sentinel:
+#      transport:
+#        #指定sentinel控制台的地址
+#        dashboard: localhost:8080
+  #        namespace:
 #          d6138e58-9c53-47bc-8930-953b3844a570
 #        cluster-name: NJ
   application:
     name: blog-service
 server:
-  port: 8082
+  port: 8092
 
+logging:
+  level:
+    com.zzy.cloudblogblog.feignclient.UserServiceFeignClient: debug
+
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: full
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+jwt:
+  secret: yaoshixinyuanjieyijiuhaole
+  expire-time-in-second: 1209600
+#  endpoint:
+#    health:
+#      show-details: always
 #细粒度配置——随机选择实例user-service
 #user-service:
 #  ribbon:

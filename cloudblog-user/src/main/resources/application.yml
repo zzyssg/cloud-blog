@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8091
 spring:
   datasource:
     url: jdbc:mysql://localhost:3308/cloudblog_user?serverTimezone=GMT
@@ -11,6 +11,13 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+    stream:
+      rocketmq:
+        binder:
+          name-server: 127.0.0.1:9876
+      bindings:
+        input:
+          destination: blog-user-topic
+          group: blog-user-binding
   application:
     name: user-service
-

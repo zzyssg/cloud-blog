@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * @author zzy
  * @Date 2020/12/2 20:35
  */
-@Configuration
+//@Configuration
 @RibbonClients(defaultConfiguration = UserserveConfiguration.class)
 public class UserServicesRibbonConfiguration {
 }

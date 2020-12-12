@@ -1,6 +1,7 @@
 package com.zzy.cloudbloguser.controller;
 
 import com.zzy.cloudbloguser.dao.user.UserMapper;
+import com.zzy.cloudbloguser.dto.UserDTO;
 import com.zzy.cloudbloguser.entity.user.User;
 import com.zzy.cloudbloguser.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,14 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public User queryUser(@PathVariable Integer userId){
-        log.info("user...");
-        return this.userService.findById(userId);
+        User user = this.userService.findById(userId);
+        log.info("id为{}的user是:{}", userId, user);
+        return user;
+    }
+
+    @GetMapping("/query")
+    public UserDTO query(UserDTO userDTO){
+        return userDTO;
     }
 
 }
