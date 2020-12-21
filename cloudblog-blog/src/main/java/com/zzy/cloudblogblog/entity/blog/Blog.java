@@ -1,5 +1,6 @@
 package com.zzy.cloudblogblog.entity.blog;
 
+import com.zzy.cloudblogblog.entity.type.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -99,5 +100,10 @@ public class Blog {
      */
     @Column(name = "update_time")
     private Date updateTime;
+
+    /**
+     * 博客类型
+     */
+    private Type type;
 
 }

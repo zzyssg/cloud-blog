@@ -1,5 +1,6 @@
 package com.zzy.cloudblogblog.dto;
 
+import com.zzy.cloudblogblog.entity.type.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,10 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class BlogDTO {
+
+    /**
+     * 博客标识
+     */
     private Integer blogId;
 
     /**
@@ -25,13 +30,44 @@ public class BlogDTO {
     private String title;
 
     /**
-     * 用户标识
-     */
-    private String userName;
-
-    /**
      * 博客类型标识
      */
     private Integer typeId;
+
+    /**
+     * 博客内容
+     */
+    private String content;
+
+    /**
+     * 博客首图
+     */
+    private String firstPicture;
+
+    /**
+     * 博客简介
+     */
+    private String description;
+
+    /**
+     * 是否可转载
+     */
+    private boolean sharement;
+
+    /**
+     * 是否推荐
+     */
+    private boolean recommend;
+
+    /**
+     * 更新时间
+     */
+    private Date updateTime;
+
+    /**
+     * 博客类型
+     */
+    private Type type;
+
 
 }

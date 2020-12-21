@@ -6,6 +6,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,8 @@ import java.util.Map;
  */
 @Slf4j
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Component
 public class JwtOperator {
 
@@ -33,7 +37,7 @@ public class JwtOperator {
     /**
      * token有效期
      */
-    @Value("@{expire-time-in-second:1209600}")
+    @Value("${expire-time-in-second:1209600}")
     private Long expirationTimeInSecond;
 
     /**
@@ -94,7 +98,6 @@ public class JwtOperator {
                 .setExpiration(expirationTime)
                 .signWith(key)
                 .compact();
-
     }
 
     /**

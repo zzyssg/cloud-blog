@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3308/cloudblog_blog?serverTimezone=GMT
+    url: jdbc:mysql://localhost:3308/cloudblog?serverTimezone=GMT
     hikari:
       username: root
       password: 116924
@@ -55,6 +55,9 @@ management:
 jwt:
   secret: yaoshixinyuanjieyijiuhaole
   expire-time-in-second: 1209600
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
 #  endpoint:
 #    health:
 #      show-details: always

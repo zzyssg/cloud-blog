@@ -1,24 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zzy.cloudblogblog.dao.blog.BlogMapper">
-  <resultMap id="BaseResultMap" type="com.zzy.cloudblogblog.entity.blog.Blog">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="blog_id" jdbcType="INTEGER" property="blogId"/>
-    <result column="title" jdbcType="VARCHAR" property="title" />
-    <result column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="type_id" jdbcType="INTEGER" property="typeId" />
-    <result column="content" jdbcType="VARCHAR" property="content" />
-    <result column="first_picture" jdbcType="VARCHAR" property="firstPicture" />
-    <result column="description" jdbcType="VARCHAR" property="description" />
-    <result column="flag" jdbcType="TINYINT" property="flag" />
-    <result column="views" jdbcType="INTEGER" property="views" />
-    <result column="sharement" jdbcType="BIT" property="sharement" />
-    <result column="commentabled" jdbcType="BIT" property="commentabled" />
-    <result column="published" jdbcType="BIT" property="published" />
-    <result column="recommend" jdbcType="BIT" property="recommend" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-  </resultMap>
+    <resultMap id="blog" type="com.zzy.cloudblogblog.entity.blog.Blog">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="blog_id" jdbcType="INTEGER" property="blogId"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="type_id" jdbcType="INTEGER" property="typeId"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="first_picture" jdbcType="VARCHAR" property="firstPicture"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="flag" jdbcType="TINYINT" property="flag"/>
+        <result column="views" jdbcType="INTEGER" property="views"/>
+        <result column="sharement" jdbcType="BIT" property="sharement"/>
+        <result column="commentabled" jdbcType="BIT" property="commentabled"/>
+        <result column="published" jdbcType="BIT" property="published"/>
+        <result column="recommend" jdbcType="BIT" property="recommend"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <association property="type" javaType="com.zzy.cloudblogblog.entity.type.Type">
+            <id column="type_id" property="typeId" />
+            <result column="type_name" property="typeName"/>
+        </association>
+    </resultMap>
+    <select id="listAllBlogs" resultMap="blog">
+        select
+            b.blog_id, b.title, b.user_id, b.type_id, b.content, b.first_picture,
+            b.description, b.flag, b.views, b.sharement, b.commentabled, b.published,
+            b.recommend, b.update_time, t.type_id, t.type_name
+        from
+            t_blog b
+        left join
+            t_blog_type bty
+        on
+            b.blog_id = bty.blog_id
+        left join
+            t_type t
+        on
+            bty.type_id = t.type_id
+        order by
+            b.update_time
+        desc
+    </select>
+    <select id="listBlogsByTypeId" resultMap="blog">
+        select
+            *
+        FROM
+            t_blog b
+        LEFT JOIN
+            t_blog_user bu
+        on
+            b.blog_id = bu.blog_id
+        LEFT JOIN
+            t_user u
+        on
+            bu.user_id = u.user_id
+        WHERE
+            b.type_id = #{typeId}
+    </select>
+    <select id="listBlogsByCondition" resultMap="blog">
+        select
+            b.blog_id, b.title, b.content, b.recommend,
+            b.update_time, b.type_id, t.type_id, t.type_name
+        from
+            t_blog b
+        left join
+            t_blog_type bty
+        on
+            b.blog_id = bty.blog_id
+        left join
+            t_type t
+        on
+            bty.type_id = t.type_id
+        <where>
+            <if test="title != null">
+                and b.title like '%' #{title} '%'
+            </if>
+            <if test="typeId != null">
+                and t.type_id = #{typeId}
+            </if>
+            <if test="recommend != null">
+                and b.recommend = #{recommend}
+            </if>
+        </where>
+        order by
+        b.update_time
+        desc
+    </select>
+
 </mapper>

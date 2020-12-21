@@ -1,98 +1,85 @@
 package com.zzy.cloudblogblog.service;
 
-import com.alibaba.fastjson.JSON;
-import com.zzy.cloudblogblog.dao.blog.BlogMapper;
-import com.zzy.cloudblogblog.dao.midtransaction.BlogRocketmqTransactionLogMapper;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.zzy.cloudblogblog.dto.BlogDTO;
-import com.zzy.cloudblogblog.dto.UserDTO;
 import com.zzy.cloudblogblog.entity.blog.Blog;
-import com.zzy.cloudblogblog.entity.midtransaction.BlogRocketmqTransactionLog;
-import com.zzy.cloudblogblog.feignclient.UserServiceFeignClient;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.messaging.Source;
-import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
+import java.util.List;
 
 /**
  * @author zzy
- * @Date 2020/12/2 16:52
+ * @Date 2020/12/21 14:42
  */
-@Service
-@Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class BlogService {
-    private final BlogMapper blogMapper;
-    private final UserServiceFeignClient userServiceFeignClient;
-    private final BlogRocketmqTransactionLogMapper blogRocketmqTransactionLogMapper;
-    private final Source source;
-
-
-    public BlogDTO queryById(Integer blogId) {
-        Blog blog = this.blogMapper.selectByPrimaryKey(blogId);
-        //根据blog的userId查询出user
-        //TODO 根据blog的userId获取user的详细信息，如username和avatar
-        log.info("feign发送Http请求...");
-        UserDTO userDTO = userServiceFeignClient.findById(blog.getUserId());
-        log.info("userDTO: {}", userDTO);
-        return BlogDTO.builder()
-                .title(blog.getTitle())
-                .userName(userDTO.getUsername())
-                .blogId(blog.getBlogId())
-                .typeId(blog.getTypeId())
-                .build();
-    }
-
-
-    public Blog doWithUpdateBlog(Integer blogId) {
-        //do something--某种业务
-        Blog blog = this.blogMapper.selectByPrimaryKey(blogId);
-        if (blog != null) {
-            blog.setTitle("我是一个经过事务的blog.");
-            //某种业务执行完毕，供下游使用，发送半消息
-            String transactionId = UUID.randomUUID().toString();
-            this.source.output().send(
-                    MessageBuilder.withPayload(
-                            BlogDTO.builder()
-                                    .title("业务完成，发送给下游消息...")
-                                    .userName("me")
-                                    .build()
-                    )
-                            //多次setHeader，可以传参
-                            .setHeader("transactionId", transactionId)
-                            .setHeader("blogId", blog.getBlogId())
-                            .setHeader("blog", JSON.toJSONString(blog))
-                            .build()
-            );
-        } else {
-            log.info("查询的blog不存在，无法给下游业务提供消息...");
-        }
-        return blog;
-    }
+public interface BlogService {
 
     /**
-     * 参数包含执行本地事务(LocalTransaction)需要的参数
-     * 以及向中间事务表t_blog_rocketmq_transaction_log插入日志记录的id
-     *
+     * 按id查询博客
+     * @param blogId
+     * @return
+     */
+    BlogDTO queryById(Integer blogId);
+
+    /**
+     * 更新博客时附加操作
+     * @param blogId
+     * @return
+     */
+    Blog doWithUpdateBlog(Integer blogId);
+
+    /**
+     * 更新博客时附带事务
      * @param blog
      * @param transactionId
      * @return
      */
-    @Transactional(rollbackFor = Exception.class)
-    public String updateBlogWithRocketTransaction(Blog blog, String transactionId) {
-        //本地事务 + 记录中间事务表 —— 两者同时成功或者失败，回查时本地事务是否成功的标志
-        this.blogMapper.updateByPrimaryKeySelective(blog);
-        this.blogRocketmqTransactionLogMapper.insertSelective(
-                BlogRocketmqTransactionLog.builder()
-                        .transactionId(transactionId)
-                        .log("本地事务在执行addBlog事务...")
-                        .build()
-        );
-        return blog.toString();
-    }
+    String updateBlogWithRocketTransaction(Blog blog, String transactionId);
 
+    /**
+     * 查询所有博客
+     * @return
+     */
+    List<Blog> listAllBlogs();
+
+    /**
+     * 查询具体某类型下的所有博客
+     * @param typeId
+     * @return
+     */
+    List<Blog> listBlogsByTypeId(Long typeId);
+
+    /**
+     * 按条件查询
+     * @param blog
+     * @return
+     */
+    List<Blog> listBlogsByCondition(Blog blog);
+
+
+    /**
+     * 根据唯一标识查询博客
+     * @param blogId
+     * @return
+     */
+    Blog getBlogById(Long blogId);
+
+    /**
+     * 根据参数新增博客
+     * @param blog
+     * @return
+     */
+    Boolean insertBlog(Blog blog);
+
+    /**
+     * 根据参数更新博客
+     * @param blog
+     * @return
+     */
+    Boolean updateBlog(Blog blog);
+
+    /**
+     * 删除博客
+     * @param blog
+     * @return
+     */
+    Boolean deleteBlog(Blog blog);
 }
