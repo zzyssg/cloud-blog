@@ -1,12 +1,11 @@
 package com.zzy.cloudblogblog.dto;
 
-import com.zzy.cloudblogblog.entity.type.Type;
+import com.zzy.cloudblogblog.entity.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.util.Date;
 
 /**
@@ -68,6 +67,4 @@ public class BlogDTO {
      * 博客类型
      */
     private Type type;
-
-
 }

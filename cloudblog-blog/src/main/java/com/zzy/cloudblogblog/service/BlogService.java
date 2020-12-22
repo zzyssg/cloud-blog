@@ -1,8 +1,7 @@
 package com.zzy.cloudblogblog.service;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.zzy.cloudblogblog.dto.BlogDTO;
-import com.zzy.cloudblogblog.entity.blog.Blog;
+import com.zzy.cloudblogblog.entity.Blog;
 
 import java.util.List;
 

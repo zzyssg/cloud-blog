@@ -42,4 +42,9 @@ public class UserDTO {
      * 用户类型:1-admin、2-user、3-guest
      */
     private Integer type;
+
+    /**
+     * 全局登录认证
+     */
+    private String token;
 }

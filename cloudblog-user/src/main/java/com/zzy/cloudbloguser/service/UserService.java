@@ -1,22 +1,23 @@
 package com.zzy.cloudbloguser.service;
 
-import com.zzy.cloudbloguser.dao.user.UserMapper;
 import com.zzy.cloudbloguser.entity.user.User;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * @author zzy
- * @Date 2020/12/2 17:03
+ * @Date 2020/12/22 17:04
  */
-@Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class UserService {
-    private final UserMapper userMapper;
+public interface UserService {
+    /**
+     * 按照主键查询用户
+     * @param userId
+     * @return
+     */
+    User getUserById(Integer userId);
 
-    public User findById(Integer userId) {
-        return this.userMapper.selectByPrimaryKey(userId);
-
-    }
+    /**
+     * 按照用户名查询用户
+     * @param username
+     * @return
+     */
+    User getUserByName(String username);
 }

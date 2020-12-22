@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zzy.cloudblogblog.dao.blog.BlogMapper">
-    <resultMap id="blog" type="com.zzy.cloudblogblog.entity.blog.Blog">
+<mapper namespace="com.zzy.cloudblogblog.dao.BlogMapper">
+    <resultMap id="blog" type="com.zzy.cloudblogblog.entity.Blog">
         <!--
           WARNING - @mbg.generated
         -->
@@ -20,11 +20,13 @@
         <result column="recommend" jdbcType="BIT" property="recommend"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
-        <association property="type" javaType="com.zzy.cloudblogblog.entity.type.Type">
+        <association property="type" javaType="com.zzy.cloudblogblog.entity.Type">
             <id column="type_id" property="typeId" />
             <result column="type_name" property="typeName"/>
         </association>
     </resultMap>
+
+    <!--查询操作-->
     <select id="listAllBlogs" resultMap="blog">
         select
             b.blog_id, b.title, b.user_id, b.type_id, b.content, b.first_picture,
@@ -89,5 +91,33 @@
         b.update_time
         desc
     </select>
+
+    <!--新增操作-->
+    <insert id="insertRelativeBlog" parameterType="com.zzy.cloudblogblog.entity.Blog" useGeneratedKeys="true">
+        <!--向blog_type表中新增一条记录-->
+        insert into
+            t_blog_type(blog_id,type_id)
+        values
+            (#{blogId},#{typeId});
+
+        <!--向blog_user新增一条记录-->
+        insert into
+            t_blog_user(blog_id,user_id)
+        values
+            (#{blogId},#{userId});
+    </insert>
+
+    <!--删除操作-->
+    <delete id="deleteRelativeBlog" parameterType="com.zzy.cloudblogblog.entity.Blog">
+        delete from
+            t_blog_type
+        where
+            blog_id = #{blogId};
+
+        delete from
+            t_blog_user
+        where
+            blog_id = #{blogId};
+    </delete>
 
 </mapper>

@@ -1,7 +1,6 @@
 package com.zzy.cloudblogblog;
 
 import com.zzy.cloudblogblog.dto.UserDTO;
-import com.zzy.cloudblogblog.entity.blog.Blog;
 import com.zzy.cloudblogblog.feignclient.UserServiceFeignClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.common.message.Message;

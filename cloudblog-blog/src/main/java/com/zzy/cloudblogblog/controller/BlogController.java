@@ -1,9 +1,9 @@
 package com.zzy.cloudblogblog.controller;
 
 import com.zzy.cloudblogblog.dto.BlogDTO;
-import com.zzy.cloudblogblog.entity.blog.Blog;
-import com.zzy.cloudblogblog.entity.response.ResponseBean;
-import com.zzy.cloudblogblog.entity.type.Type;
+import com.zzy.cloudblogblog.entity.Blog;
+import com.zzy.cloudblogblog.entity.ResponseBean;
+import com.zzy.cloudblogblog.entity.Type;
 import com.zzy.cloudblogblog.enums.ResponseEnum;
 import com.zzy.cloudblogblog.exception.CommonException;
 import com.zzy.cloudblogblog.service.BlogService;
@@ -207,7 +207,7 @@ public class BlogController {
                     ResponseEnum.BLOG_FROM_FRONT_IS_NULL.getMsg());
         }
         //blogId已存在,执行更新操作
-        if (blog.getBlogId() == null || !blog.getBlogId().equals(-1)) {
+        if (blog.getBlogId() != null && !blog.getBlogId().equals(-1)) {
             blogService.updateBlog(blog);
             Blog blogById = blogService.getBlogById(blog.getBlogId().longValue());
             return new ResponseBean(ResponseEnum.RESPONSE_SUCCESS.getCode(),

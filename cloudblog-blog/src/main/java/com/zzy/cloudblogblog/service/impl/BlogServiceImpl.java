@@ -1,12 +1,12 @@
 package com.zzy.cloudblogblog.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.zzy.cloudblogblog.dao.blog.BlogMapper;
-import com.zzy.cloudblogblog.dao.midtransaction.BlogRocketmqTransactionLogMapper;
+import com.zzy.cloudblogblog.dao.BlogMapper;
+import com.zzy.cloudblogblog.dao.BlogRocketmqTransactionLogMapper;
 import com.zzy.cloudblogblog.dto.BlogDTO;
 import com.zzy.cloudblogblog.dto.UserDTO;
-import com.zzy.cloudblogblog.entity.blog.Blog;
-import com.zzy.cloudblogblog.entity.midtransaction.BlogRocketmqTransactionLog;
+import com.zzy.cloudblogblog.entity.Blog;
+import com.zzy.cloudblogblog.entity.BlogRocketmqTransactionLog;
 import com.zzy.cloudblogblog.enums.ResponseEnum;
 import com.zzy.cloudblogblog.exception.CommonException;
 import com.zzy.cloudblogblog.feignclient.UserServiceFeignClient;
@@ -152,11 +152,21 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public Boolean insertBlog(Blog blog) {
 
+        //向t_blog表中新增博客
         int effectedLine = blogMapper.insert(blog);
         if (effectedLine != 1) {
             log.error("新增博客时出错!");
             throw new CommonException(ResponseEnum.INSERT_BLOG_ERROR.getCode(),
                     ResponseEnum.INSERT_BLOG_ERROR.getMsg());
+        }
+        //向t_blog_type 和 t_blog_user 中新增博客
+        try {
+            blogMapper.insertRelativeBlog(blog);
+//            throw new RuntimeException();
+        } catch (Exception e) {
+            log.error("blog表新增记录时，向其相关表中新增记录时出错!错误:{}", e.getMessage());
+            throw new CommonException(ResponseEnum.INSERT_BLOG_RELATIVE_ERROR.getCode(),
+                    ResponseEnum.INSERT_BLOG_RELATIVE_ERROR.getMsg());
         }
         return true;
     }
@@ -170,11 +180,16 @@ public class BlogServiceImpl implements BlogService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean updateBlog(Blog blog) {
-        int updateLine = blogMapper.updateByPrimaryKeySelective(blog);
-        if (updateLine != 1) {
-            log.error("更新博客时错误!更新的博客参数:{}", blog);
-            throw new CommonException(ResponseEnum.UPDATE_BLOG_ERROR.getCode(),
-                    ResponseEnum.UPDATE_BLOG_ERROR.getMsg());
+        try {
+
+            int updateLine = blogMapper.updateByPrimaryKeySelective(blog);
+            if (updateLine != 1) {
+                log.error("更新博客时错误!更新的博客参数:{}", blog);
+                throw new CommonException(ResponseEnum.UPDATE_BLOG_ERROR.getCode(),
+                        ResponseEnum.UPDATE_BLOG_ERROR.getMsg());
+            }
+        } catch (Exception e) {
+            log.error("更新博客时发生错误:{}", e.getMessage());
         }
         log.info("更新博客成功!更新参数为:{}", blog);
         return true;
@@ -190,12 +205,17 @@ public class BlogServiceImpl implements BlogService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean deleteBlog(Blog blog) {
+        //删除博客表
         int deleteLine = blogMapper.deleteByPrimaryKey(blog);
         if (deleteLine != 1) {
             log.error(ResponseEnum.DELETE_BLOG_ERROR.getMsg());
             throw new CommonException(ResponseEnum.DELETE_BLOG_ERROR.getCode(),
                     ResponseEnum.DELETE_BLOG_ERROR.getMsg());
         }
+        //删除博客关联表 t_blog_type t_blog_user
+        blogMapper.deleteRelativeBlog(blog);
+
+
         return true;
     }
 

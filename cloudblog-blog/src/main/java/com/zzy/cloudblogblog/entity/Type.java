@@ -1,4 +1,4 @@
-package com.zzy.cloudblogblog.entity.type;
+package com.zzy.cloudblogblog.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

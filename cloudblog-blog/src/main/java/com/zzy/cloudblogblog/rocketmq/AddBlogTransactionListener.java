@@ -1,9 +1,9 @@
 package com.zzy.cloudblogblog.rocketmq;
 
 import com.alibaba.fastjson.JSON;
-import com.zzy.cloudblogblog.dao.midtransaction.BlogRocketmqTransactionLogMapper;
-import com.zzy.cloudblogblog.entity.blog.Blog;
-import com.zzy.cloudblogblog.entity.midtransaction.BlogRocketmqTransactionLog;
+import com.zzy.cloudblogblog.dao.BlogRocketmqTransactionLogMapper;
+import com.zzy.cloudblogblog.entity.Blog;
+import com.zzy.cloudblogblog.entity.BlogRocketmqTransactionLog;
 import com.zzy.cloudblogblog.service.BlogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

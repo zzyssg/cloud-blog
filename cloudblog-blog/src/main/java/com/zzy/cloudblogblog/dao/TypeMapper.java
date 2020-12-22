@@ -1,6 +1,6 @@
-package com.zzy.cloudblogblog.dao.type;
+package com.zzy.cloudblogblog.dao;
 
-import com.zzy.cloudblogblog.entity.type.Type;
+import com.zzy.cloudblogblog.entity.Type;
 import tk.mybatis.mapper.common.Mapper;
 
 /**

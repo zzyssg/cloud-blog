@@ -1,6 +1,5 @@
-package com.zzy.cloudblogblog.entity.blog;
+package com.zzy.cloudblogblog.entity;
 
-import com.zzy.cloudblogblog.entity.type.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -93,13 +92,13 @@ public class Blog {
      * 创作时间
      */
     @Column(name = "create_time")
-    private Date createTime;
+    private Date createTime = new Date();
 
     /**
      * 更新时间
      */
     @Column(name = "update_time")
-    private Date updateTime;
+    private Date updateTime = new Date();
 
     /**
      * 博客类型

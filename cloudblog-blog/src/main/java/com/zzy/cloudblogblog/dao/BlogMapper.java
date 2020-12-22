@@ -1,6 +1,6 @@
-package com.zzy.cloudblogblog.dao.blog;
+package com.zzy.cloudblogblog.dao;
 
-import com.zzy.cloudblogblog.entity.blog.Blog;
+import com.zzy.cloudblogblog.entity.Blog;
 import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
@@ -29,4 +29,16 @@ public interface BlogMapper extends Mapper<Blog> {
      * @return
      */
     List<Blog> listBlogsByCondition(Blog blog);
+
+    /**
+     * 根据博客标识删除其余相关表的内容
+     * @param blog
+     */
+    void deleteRelativeBlog(Blog blog);
+
+    /**
+     * 向t_blog的相关表t_blog_type、t_blog_user中添加记录
+     * @param blog
+     */
+    void insertRelativeBlog(Blog blog);
 }

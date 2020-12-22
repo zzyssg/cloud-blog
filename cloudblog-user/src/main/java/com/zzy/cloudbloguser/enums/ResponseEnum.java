@@ -1,14 +1,14 @@
-package com.zzy.cloudblogblog.enums;
+package com.zzy.cloudbloguser.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 /**
  * @author zzy
- * @Date 2020/12/21 11:07
+ * @Date 2020/12/22 16:26
  */
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public enum ResponseEnum {
     /**
      * 成功时返回
@@ -42,27 +42,30 @@ public enum ResponseEnum {
     INSERT_BLOG_RELATIVE_ERROR(704,"新增博客关联表记录错误"),
     INSERT_TYPE_ERROR(705,"新增(博客)类型错误"),
     DELETE_TYPE_PARAM_ERROR(706,"删除(博客)类型参数非法"),
-    DELETE_TYPE_ERROR(707,"删除(博客)类型错误");
+    DELETE_TYPE_ERROR(707,"删除(博客)类型错误"),
 
     /**
      * 8xx为登录相关错误
      */
+    LOGIN_PARAM_ERROR(801, "登录参数非法"),
+    USER_NOT_FOUND(802,"用户不存在"),
+    USERNAME_OR_PASSWORD_ERROR(803,"用户名或者密码错误");
 
     /**
-     * 状态码
+     * 返回值状态码
      */
-    private Integer code;
+    private Integer retCode;
 
     /**
-     * 状态信息
+     * 返回值状态信息
      */
-    private String msg;
+    private String retMsg;
 
-    public Integer getCode() {
-        return code;
+    public Integer getRetCode() {
+        return retCode;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getRetMsg() {
+        return retMsg;
     }
 }

@@ -1,6 +1,6 @@
 package com.zzy.cloudblogblog.service;
 
-import com.zzy.cloudblogblog.entity.type.Type;
+import com.zzy.cloudblogblog.entity.Type;
 
 import java.util.List;
 
@@ -22,4 +22,20 @@ public interface TypeService {
      * @return
      */
     Type getTypeById(Long typeId);
+
+    /**
+     * 新增类型
+     * @param type
+     * @return
+     */
+    Boolean insertType(Type type);
+
+    /**
+     * 删除类型前确认此类型下的博客是否已经没有博客了
+     * 若还存在博客——删除失败，false
+     * 若不存在博客——删除成功，true
+     * @param typeById
+     * @return
+     */
+    Boolean deleteType(Type typeById);
 }
