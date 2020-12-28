@@ -41,7 +41,7 @@ public class TestController {
 
     @GetMapping("/q")
     public UserDTO q(UserDTO userDTO){
-        return userServiceFeignClient.findByCondition(userDTO);
+        return userServiceFeignClient.listBlogsByUserCondition(userDTO);
     }
 
     @GetMapping("/send")

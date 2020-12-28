@@ -2,7 +2,7 @@ package com.zzy.cloudbloguser.controller;
 
 import com.zzy.cloudbloguser.dto.UserDTO;
 import com.zzy.cloudbloguser.entity.ResponseBean;
-import com.zzy.cloudbloguser.entity.user.User;
+import com.zzy.cloudbloguser.entity.User;
 import com.zzy.cloudbloguser.enums.ResponseEnum;
 import com.zzy.cloudbloguser.exception.CommonException;
 import com.zzy.cloudbloguser.service.impl.UserServiceImpl;
@@ -107,6 +107,7 @@ public class UserController {
         //返回loginVO / loginDTO
         UserDTO loginUser = new UserDTO();
         BeanUtils.copyProperties(userByName, loginUser);
+        loginUser.setToken("123456");
 
         result = new ResponseBean(ResponseEnum.RESPONSE_SUCCESS.getRetCode(),ResponseEnum.RESPONSE_SUCCESS.getRetMsg(),
                 loginUser);
@@ -115,10 +116,11 @@ public class UserController {
 
     }
 
-
-
-
-
+    /**
+     * 根据用户ID查询用户
+     * @param userId
+     * @return
+     */
     @GetMapping("/{userId}")
     public User queryUser(@PathVariable Integer userId){
         User user = this.userServiceImpl.getUserById(userId);
@@ -131,4 +133,31 @@ public class UserController {
         return userDTO;
     }
 
+    @PostMapping("/frontRegister")
+    public ResponseBean frontRegister(@RequestBody User user){
+        ResponseBean result;
+        //根据用户名查询密码，若密码正确，则验证通过
+        //1、检验user登录参数合法性
+        if (!loginParamLegal(user)) {
+            log.error("用户登录参数非法!前端登录参数：{}",user);
+            throw new CommonException(ResponseEnum.LOGIN_PARAM_ERROR.getRetCode(),
+                    ResponseEnum.LOGIN_PARAM_ERROR.getRetMsg());
+        }
+        //2、根据用户名查询用户
+        User userByName = userServiceImpl.getUserByName(user.getUsername());
+        //3、根据查询出的用户比较密码是否一样，一样则登录通过；否则不通过
+        if (!isEquals(user, userByName)) {
+            log.error("用户{}的密码不正确!",user.getUsername());
+            throw new CommonException(ResponseEnum.USERNAME_OR_PASSWORD_ERROR.getRetCode(),
+                    ResponseEnum.USERNAME_OR_PASSWORD_ERROR.getRetMsg());
+        }
+        //返回loginVO / loginDTO
+        UserDTO loginUser = new UserDTO();
+        BeanUtils.copyProperties(userByName, loginUser);
+
+        result = new ResponseBean(ResponseEnum.RESPONSE_SUCCESS.getRetCode(),ResponseEnum.RESPONSE_SUCCESS.getRetMsg(),
+                loginUser);
+        log.info("用户{}登录成功!",user.getUsername());
+        return result;
+    }
 }

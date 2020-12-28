@@ -18,6 +18,13 @@
         <java.version>1.8</java.version>
     </properties>
 
+    <modules>
+        <module>cloudblog-comment</module>
+        <module>cloudblog-gateway</module>
+        <module>cloudblog-user</module>
+        <module>cloudblog-blog</module>
+    </modules>
+
     <!--整合spring-cloud 引入cloud组件不用指定版本号，由cloud统一管理  -->
     <dependencyManagement>
         <dependencies>
@@ -65,10 +72,22 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+<!--                <configuration>-->
+<!--                    &lt;!&ndash;跳过项目运行测试用例&ndash;&gt;-->
+<!--                    <skipTests>true</skipTests>-->
+<!--                </configuration>-->
             </plugin>
         </plugins>
     </build>
+    <packaging>pom</packaging>
 
 </project>

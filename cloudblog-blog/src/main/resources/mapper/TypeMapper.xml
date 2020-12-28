@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zzy.cloudblogblog.dao.TypeMapper">
-  <resultMap id="BaseResultMap" type="com.zzy.cloudblogblog.entity.Type">
+  <resultMap id="type" type="com.zzy.cloudblogblog.entity.Type">
     <!--
       WARNING - @mbg.generated
     -->
     <id column="type_id" jdbcType="INTEGER" property="typeId" />
     <result column="type_name" jdbcType="VARCHAR" property="typeName" />
   </resultMap>
+  <select id="getTypeByName" resultMap="type">
+    select
+      t.type_id, t.type_name
+    from
+      t_type t
+    where
+      t.type_name = #{typeName}
+  </select>
+  <select id="listAllTypes" resultMap="type">
+    select
+      *
+    from
+      t_type
+  </select>
+  <select id="countAllType" resultType="java.lang.Integer">
+    select
+      count(1)
+    from
+      t_type
+  </select>
+  <select id="getTypeById" resultMap="type">
+    select
+      *
+    from
+      t_type
+    where
+      type_id = #{typeId}
+  </select>
 </mapper>

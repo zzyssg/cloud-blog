@@ -25,6 +25,7 @@ public enum ResponseEnum {
     BLOG_ONID_IS_NULL(105,"此ID博客为空"),
     TYPE_IS_NULL(102,"博客类型为空"),
     TYPE_ONID_IS_NULL(107,"此ID类型为空"),
+    TYPE_ALREADY_EXISTS(108,"此类型已存在"),
 
 
     /**

@@ -41,4 +41,33 @@ public interface BlogMapper extends Mapper<Blog> {
      * @param blog
      */
     void insertRelativeBlog(Blog blog);
+
+    /**
+     * 统计所有博客的数量
+     * @return
+     */
+    Integer countAllBlogs();
+
+    /**
+     * 更新博客
+     * @param blog
+     * @return
+     */
+    Integer updateBlog(Blog blog);
+
+    /**
+     * 根据博客id查询博客，附带查出user、comments、type
+     * @param blogId
+     * @return
+     */
+    Blog getBlogById(Long blogId);
+
+    /**
+     * 查询某用户所有博客
+     * @param userId
+     * @return
+     */
+    List<Blog> listBlogsByUserId(Integer userId);
+
+
 }

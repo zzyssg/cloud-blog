@@ -1,6 +1,6 @@
 package com.zzy.cloudbloguser.dao;
 
-import com.zzy.cloudbloguser.entity.user.User;
+import com.zzy.cloudbloguser.entity.User;
 import tk.mybatis.mapper.common.Mapper;
 
 /**

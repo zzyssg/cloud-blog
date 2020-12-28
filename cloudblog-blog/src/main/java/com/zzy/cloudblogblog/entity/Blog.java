@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 import javax.persistence.*;
 
 /**
@@ -33,14 +34,14 @@ public class Blog {
     /**
      * 用户标识
      */
-    @Column(name = "user_id")
-    private Integer userId;
+//    @Column(name = "user_id")
+//    private Integer userId;
 
     /**
      * 博客类型标识
      */
-    @Column(name = "type_id")
-    private Integer typeId;
+//    @Column(name = "type_id")
+//    private Integer typeId;
 
     /**
      * 博客内容
@@ -92,17 +93,27 @@ public class Blog {
      * 创作时间
      */
     @Column(name = "create_time")
-    private Date createTime = new Date();
+    private Date createTime;
 
     /**
      * 更新时间
      */
     @Column(name = "update_time")
-    private Date updateTime = new Date();
+    private Date updateTime;
 
     /**
      * 博客类型
      */
     private Type type;
+
+    /**
+     * 博客所属用户
+     */
+    private User user;
+
+    /**
+     * 评论
+     */
+    private List<Comment> comments;
 
 }

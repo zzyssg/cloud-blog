@@ -1,6 +1,5 @@
 package com.zzy.cloudbloguser;
 
-import com.zzy.cloudbloguser.entity.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;

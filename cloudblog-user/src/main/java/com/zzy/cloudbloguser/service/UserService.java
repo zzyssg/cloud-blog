@@ -1,6 +1,6 @@
 package com.zzy.cloudbloguser.service;
 
-import com.zzy.cloudbloguser.entity.user.User;
+import com.zzy.cloudbloguser.entity.User;
 
 /**
  * @author zzy

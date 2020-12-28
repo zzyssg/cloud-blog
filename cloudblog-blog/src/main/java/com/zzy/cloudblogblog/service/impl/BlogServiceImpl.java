@@ -3,10 +3,9 @@ package com.zzy.cloudblogblog.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.zzy.cloudblogblog.dao.BlogMapper;
 import com.zzy.cloudblogblog.dao.BlogRocketmqTransactionLogMapper;
+import com.zzy.cloudblogblog.dao.TypeMapper;
 import com.zzy.cloudblogblog.dto.BlogDTO;
-import com.zzy.cloudblogblog.dto.UserDTO;
-import com.zzy.cloudblogblog.entity.Blog;
-import com.zzy.cloudblogblog.entity.BlogRocketmqTransactionLog;
+import com.zzy.cloudblogblog.entity.*;
 import com.zzy.cloudblogblog.enums.ResponseEnum;
 import com.zzy.cloudblogblog.exception.CommonException;
 import com.zzy.cloudblogblog.feignclient.UserServiceFeignClient;
@@ -19,8 +18,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author zzy
@@ -31,23 +29,24 @@ import java.util.UUID;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class BlogServiceImpl implements BlogService {
     private final BlogMapper blogMapper;
+    private final TypeMapper typeMapper;
     private final UserServiceFeignClient userServiceFeignClient;
     private final BlogRocketmqTransactionLogMapper blogRocketmqTransactionLogMapper;
     private final Source source;
 
 
     @Override
-    public BlogDTO queryById(Integer blogId) {
+    public BlogDTO getBlogById(Integer blogId) {
         Blog blog = this.blogMapper.selectByPrimaryKey(blogId);
         //根据blog的userId查询出user
         //TODO 根据blog的userId获取user的详细信息，如username和avatar
         log.info("feign发送Http请求...");
-        UserDTO userDTO = userServiceFeignClient.findById(blog.getUserId());
-        log.info("userDTO: {}", userDTO);
+        User user = userServiceFeignClient.getUserById(blog.getUser().getUserId());
+        log.info("userDTO: {}", user);
         return BlogDTO.builder()
                 .title(blog.getTitle())
                 .blogId(blog.getBlogId())
-                .typeId(blog.getTypeId())
+                .typeId(blog.getType().getTypeId())
                 .build();
     }
 
@@ -107,7 +106,13 @@ public class BlogServiceImpl implements BlogService {
      */
     @Override
     public List<Blog> listAllBlogs() {
-        return blogMapper.listAllBlogs();
+        List<Blog> allBlogs = blogMapper.listAllBlogs();
+        if (allBlogs == null) {
+            log.error("目前暂无博客!");
+            throw new CommonException(ResponseEnum.BLOG_IS_NULL.getCode(),
+                    ResponseEnum.BLOG_IS_NULL.getMsg());
+        }
+        return allBlogs;
     }
 
     /**
@@ -118,7 +123,20 @@ public class BlogServiceImpl implements BlogService {
      */
     @Override
     public List<Blog> listBlogsByTypeId(Long typeId) {
-        return blogMapper.listBlogsByTypeId(typeId);
+        List<Blog> result = new ArrayList<>();
+        Type typeById = typeMapper.getTypeById(typeId.intValue());
+        if (typeById == null) {
+            log.error("目前还没有id为{}类型...",typeId);
+            return result;
+        }
+        List<Blog> blogsByTypeId = blogMapper.listBlogsByTypeId(typeId);
+        if (blogsByTypeId == null) {
+            log.error("类型{}下的博客为空!", typeId);
+            throw new CommonException(ResponseEnum.BLOG_OFTYPE_IS_NULL.getCode(),
+                    ResponseEnum.BLOG_OFTYPE_IS_NULL.getMsg());
+        }
+        result = blogsByTypeId;
+        return result;
     }
 
     /**
@@ -139,7 +157,89 @@ public class BlogServiceImpl implements BlogService {
      */
     @Override
     public Blog getBlogById(Long blogId) {
-        return blogMapper.selectByPrimaryKey(blogId);
+        Blog blog = blogMapper.getBlogById(blogId);
+        //从blog中取出comments
+        List<Comment> resultComments = new ArrayList<>();
+        List<Comment> comments = blog.getComments();
+        if (!comments.isEmpty()) {
+            //去除特殊情况：当blog中没有comment时，仍能查出来一条，但是其comment中的成员变量，除了blogId以外均为空
+            //——因此去除这种特殊情况
+            if (comments.size() == 1 && comments.get(0).getContent() == null) {
+                comments.remove(0);
+            }
+            //此处处理一下comments
+            //TODO 首先为comments赋user
+            for (Comment comment : comments) {
+                Integer commentUserId = comment.getUserId();
+                //TODO 调用service接口，根据ID查询用户
+                User curUser = userServiceFeignClient.getUserById(commentUserId);
+//                User curUser = userService.getUserById(commentUserId);
+                comment.setUser(curUser);
+            }
+            //找到各自的parentComment——设置父级评论昵称
+            for (int i = 0; i < comments.size(); i++) {
+                Comment sonComment = comments.get(i);
+                if (sonComment.getParentCommentId() == null) {
+                    continue;
+                }
+                for (int j = 0; j < comments.size(); j++) {
+                    Comment fatherComment = comments.get(j);
+                    if (sonComment.getParentCommentId().equals(fatherComment.getCommentId())) {
+                        User parentCommentUser = User.builder()
+                                .nickname(fatherComment.getUser().getNickname())
+                                .avatar(fatherComment.getUser().getAvatar())
+                                .build();
+                        sonComment.setParentCommentUser(parentCommentUser);
+                    }
+                }
+            }
+            Map<Comment, List<Comment>> temComments = new HashMap<>();
+            //先筛选出根评论，并且将根评论的id映射出一个map，key为根评论id，value为其子孙评论id
+            for (Comment comment : comments) {
+                if (comment.getParentCommentId() == null) {
+                    //根评论
+                    temComments.put(comment, new ArrayList<>());
+                }
+            }
+            //遍历剩余评论，如果其parentId即为key的id或者 是key对应的value的id，将其扔进key对应的value里
+            for (Comment comment : comments) {
+                Integer curCommentParentId = comment.getParentCommentId();
+                for (Map.Entry<Comment, List<Comment>> entry : temComments.entrySet()) {
+                    Comment rootComment = entry.getKey();
+                    List<Comment> subComments = entry.getValue();
+                    Boolean isSubComment = curCommentParentId != null
+                            && (curCommentParentId.equals(rootComment.getCommentId())
+                            || hasParent(subComments,comment));
+                    if (isSubComment) {
+                        temComments.get(rootComment).add(comment);
+                    }
+                }
+            }
+            //处理一下temComments  key--comment有一个blogId
+            //将key对应的value设置到replements
+            for (Map.Entry<Comment, List<Comment>> entry : temComments.entrySet()) {
+                Comment comment = entry.getKey();
+                comment.setReplyComments(entry.getValue());
+                resultComments.add(comment);
+            }
+            blog.setComments(resultComments);
+        }
+        return blog;
+    }
+
+    /**
+     *如果子评论中有其直接父评论，也加入进此根评论的子评论中
+     * @param subComments
+     * @param comment
+     * @return
+     */
+    private boolean hasParent(List<Comment> subComments, Comment comment) {
+        for (Comment subComment : subComments) {
+            if (subComment.getCommentId().equals(comment.getParentCommentId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -214,9 +314,18 @@ public class BlogServiceImpl implements BlogService {
         }
         //删除博客关联表 t_blog_type t_blog_user
         blogMapper.deleteRelativeBlog(blog);
-
-
         return true;
+    }
+
+    /**
+     * 查询某用户的所有博客
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<Blog> listBlogsByUserId(Integer userId) {
+        return blogMapper.listBlogsByUserId(userId);
     }
 
 }

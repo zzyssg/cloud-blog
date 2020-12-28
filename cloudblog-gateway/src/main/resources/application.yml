@@ -12,13 +12,15 @@ spring:
         locator:
           #geteway通过服务发现组件找到其他微服务
           enabled: true
-      routes:
-        - id: between_route
-          uri: lb://user-service
-          predicates:
-            - TimeBetween=上午9:00,下午11:00
-          filters:
-            - PreLog=name,zzy
+#      routes:
+#        - id: between_route
+#          uri: lb://user-service
+#          predicates:
+#            - TimeBetween=上午9:00,下午11:00
+#          filters:
+#            - PreLog=name,zzy
+#        - id: between_blog
+#          uri: lb://blog-service
 management:
   endpoints:
     web:

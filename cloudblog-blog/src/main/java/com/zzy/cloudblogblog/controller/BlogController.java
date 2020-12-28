@@ -1,6 +1,7 @@
 package com.zzy.cloudblogblog.controller;
 
 import com.zzy.cloudblogblog.dto.BlogDTO;
+import com.zzy.cloudblogblog.dto.TypeDTO;
 import com.zzy.cloudblogblog.entity.Blog;
 import com.zzy.cloudblogblog.entity.ResponseBean;
 import com.zzy.cloudblogblog.entity.Type;
@@ -32,14 +33,14 @@ public class BlogController {
 
     @GetMapping("/{blogId}")
     public BlogDTO getBlog(@PathVariable Integer blogId) {
-        return blogService.queryById(blogId);
+        return blogService.getBlogById(blogId);
     }
 
     @GetMapping("/testTrsc/{id}")
     public BlogDTO updateBlog(@PathVariable Integer id) {
         log.info("进入controller——addBlog,操作的博客ID是{}", id);
         Blog blog = this.blogService.doWithUpdateBlog(id);
-        BlogDTO blogDTO = this.blogService.queryById(id);
+        BlogDTO blogDTO = this.blogService.getBlogById(id);
         return blogDTO;
     }
 
@@ -63,7 +64,7 @@ public class BlogController {
         // TODO 删除BlogDTO
         for (Blog blog : blogs) {
             BlogDTO blogDTO = BlogDTO.builder()
-                    .typeId(blog.getTypeId())
+                    .typeId(blog.getType().getTypeId())
                     .blogId(blog.getBlogId())
                     .title(blog.getTitle())
                     .content(blog.getContent())
@@ -93,12 +94,8 @@ public class BlogController {
     public ResponseBean queryAllBlogs() {
         ResponseBean result;
         List<Blog> allBlogs = blogService.listAllBlogs();
-        if (allBlogs == null) {
-            log.error("目前暂无博客!");
-            throw new CommonException(ResponseEnum.BLOG_IS_NULL.getCode(),
-                    ResponseEnum.BLOG_IS_NULL.getMsg());
-        }
-        result = new ResponseBean(ResponseEnum.RESPONSE_SUCCESS.getCode(), ResponseEnum.RESPONSE_SUCCESS.getMsg(), allBlogs);
+        result = new ResponseBean(ResponseEnum.RESPONSE_SUCCESS.getCode(),
+                ResponseEnum.RESPONSE_SUCCESS.getMsg(), allBlogs);
         return result;
     }
 
@@ -111,22 +108,10 @@ public class BlogController {
     @GetMapping("/queryBlogsByTypeId/{typeId}")
     public ResponseBean queryBlogsByTypeId(@PathVariable Long typeId) {
         ResponseBean result;
-        Type typeById = typeService.getTypeById(typeId);
-        if (typeById == null) {
-            log.info("目前还没有此类型...");
-            result = new ResponseBean(ResponseEnum.TYPE_IS_NULL.getCode(),
-                    ResponseEnum.TYPE_IS_NULL.getMsg(),
-                    typeById);
-            return result;
-        }
+        //TODO 查询所有类型 + 查询某用户的所有博客 = 某用户的某类型下的所有博客
         List<Blog> blogsByTypeId = blogService.listBlogsByTypeId(typeId);
-        if (blogsByTypeId == null) {
-            log.error("类型{}下的博客为空!", typeById.getTypeName());
-            throw new CommonException(ResponseEnum.BLOG_OFTYPE_IS_NULL.getCode(),
-                    ResponseEnum.BLOG_OFTYPE_IS_NULL.getMsg());
-        }
         result = new ResponseBean(ResponseEnum.RESPONSE_SUCCESS.getCode(),
-                ResponseEnum.RESPONSE_FAILED.getMsg(),
+                ResponseEnum.RESPONSE_SUCCESS.getMsg(),
                 blogsByTypeId);
         return result;
     }
@@ -163,10 +148,12 @@ public class BlogController {
         ResponseBean result;
         Blog blogById = blogService.getBlogById(blogId);
         if (blogById == null) {
-            log.error("为查到id为{}的博客！", blogById);
+            log.error("未查到id为{}的博客！", blogId);
             throw new CommonException(ResponseEnum.BLOG_ONID_IS_NULL.getCode(),
                     ResponseEnum.BLOG_ONID_IS_NULL.getMsg());
         }
+        //TODO 将浏览量 + 1，更新blog
+
         return new ResponseBean(ResponseEnum.RESPONSE_SUCCESS.getCode(),
                 ResponseEnum.RESPONSE_SUCCESS.getMsg(),
                 blogById);
@@ -186,7 +173,7 @@ public class BlogController {
          * 2、调用tagsMapper，查询tags
          * 3、ArrayList，放入types、tags，
          * */
-        List<Type> allTypes = typeService.listAllTypes();
+        List<TypeDTO> allTypes = typeService.listAllTypes();
         if (allTypes == null) {
             log.info("博客类型为空...");
             throw new CommonException(ResponseEnum.TYPE_IS_NULL.getCode(),

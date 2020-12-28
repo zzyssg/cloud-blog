@@ -1,5 +1,6 @@
 package com.zzy.cloudblogblog.controller;
 
+import com.zzy.cloudblogblog.dto.TypeDTO;
 import com.zzy.cloudblogblog.entity.ResponseBean;
 import com.zzy.cloudblogblog.entity.Type;
 import com.zzy.cloudblogblog.enums.ResponseEnum;
@@ -16,13 +17,19 @@ import java.util.List;
  * @author zzy
  * @Date 2020/12/22 14:00
  */
-@RestController("type")
+@RestController
+@RequestMapping("/type")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class TypeController {
 
     private final TypeService typeService;
 
+    /**
+     * 根据类型唯一标识ID查询类型
+     * @param typeId
+     * @return
+     */
     @GetMapping("/queryTypeByTypeId/{typeId}")
     public ResponseBean queryTypeById(@PathVariable Long typeId) {
         ResponseBean result;
@@ -39,17 +46,14 @@ public class TypeController {
         return result;
     }
 
+    /**
+     * 查询所有类型
+     * @return
+     */
     @GetMapping("/queryAllTypes")
     public ResponseBean queryAllTypes() {
         ResponseBean result;
-        List<Type> types = typeService.listAllTypes();
-        //类型为空
-        if (types == null || types.size() == 0) {
-            log.error(ResponseEnum.TYPE_IS_NULL.getMsg());
-            throw new CommonException(ResponseEnum.TYPE_IS_NULL.getCode(),
-                    ResponseEnum.TYPE_IS_NULL.getMsg());
-        }
-        log.info("博客类型查询成功!");
+        List<TypeDTO> types = typeService.listAllTypes();
         result = new ResponseBean(ResponseEnum.RESPONSE_SUCCESS.getCode(),
                 ResponseEnum.RESPONSE_SUCCESS.getMsg(),
                 types);
@@ -57,6 +61,11 @@ public class TypeController {
         return result;
     }
 
+    /**
+     * 添加新类型
+     * @param type
+     * @return
+     */
     @PostMapping("/addType")
     public ResponseBean addType(@RequestBody Type type) {
         ResponseBean result;
@@ -67,6 +76,11 @@ public class TypeController {
         return result;
     }
 
+    /**
+     * 根据唯一标识删除类型
+     * @param typeId
+     * @return
+     */
     @GetMapping("/deleteTypeByTypeId")
     public ResponseBean deleteTypeById(@RequestParam("typeId") Long typeId) {
         ResponseBean result;
@@ -89,6 +103,4 @@ public class TypeController {
         }
         return result;
     }
-
-
 }

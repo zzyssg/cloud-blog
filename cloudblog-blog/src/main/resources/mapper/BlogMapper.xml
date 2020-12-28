@@ -7,8 +7,8 @@
         -->
         <id column="blog_id" jdbcType="INTEGER" property="blogId"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
-        <result column="user_id" jdbcType="INTEGER" property="userId"/>
-        <result column="type_id" jdbcType="INTEGER" property="typeId"/>
+<!--        <result column="user_id" jdbcType="INTEGER" property="userId"/>-->
+<!--        <result column="type_id" jdbcType="INTEGER" property="typeId"/>-->
         <result column="content" jdbcType="VARCHAR" property="content"/>
         <result column="first_picture" jdbcType="VARCHAR" property="firstPicture"/>
         <result column="description" jdbcType="VARCHAR" property="description"/>
@@ -24,14 +24,35 @@
             <id column="type_id" property="typeId" />
             <result column="type_name" property="typeName"/>
         </association>
+        <association property="user" javaType="com.zzy.cloudblogblog.entity.User">
+            <id column="user_id" property="userId" />
+            <result column="username" property="username" />
+            <result column="nickname" property="nickname" />
+            <result column="email" property="email" />
+            <result column="avatar" property="avatar" />
+            <result column="update_time" property="updateTime" />
+            <result column="userType" property="type"/>
+        </association>
+        <collection property="comments" javaType="java.util.ArrayList" ofType="com.zzy.cloudblogblog.entity.Comment">
+            <id column="comment_id" property="commentId" />
+            <result column="blog_id" property="blogId"/>
+            <result column="commentUserId" property="userId"/>
+            <result column="commentContent" property="content"/>
+            <result column="create_time" property="createTime"/>
+            <result column="parent_comment_id" property="parentCommentId"/>
+        </collection>
     </resultMap>
 
     <!--查询操作-->
     <select id="listAllBlogs" resultMap="blog">
         select
-            b.blog_id, b.title, b.user_id, b.type_id, b.content, b.first_picture,
+            b.blog_id, b.title, b.content, b.first_picture,
             b.description, b.flag, b.views, b.sharement, b.commentabled, b.published,
-            b.recommend, b.update_time, t.type_id, t.type_name
+            b.recommend, b.update_time,
+            t.type_id, t.type_name,
+            u.user_id, u.username, u.nickname, u.email, u.avatar, u.type as userType, u.update_time,
+            c.comment_id,  c.content as commentContent, c.create_time, c.parent_comment_id,
+            buc.user_id as commentUserId
         from
             t_blog b
         left join
@@ -42,9 +63,25 @@
             t_type t
         on
             bty.type_id = t.type_id
+        left join
+            t_blog_user bu
+        on
+            bu.blog_id = b.blog_id
+        left join
+            t_user u
+        on
+            bu.user_id = u.user_id
+        left join
+            t_blog_user_comment buc
+        on
+            buc.blog_id = b.blog_id
+        left join
+            t_comment c
+        on
+            c.comment_id = buc.comment_id
         order by
             b.update_time
-        desc
+        asc
     </select>
     <select id="listBlogsByTypeId" resultMap="blog">
         select
@@ -52,13 +89,21 @@
         FROM
             t_blog b
         LEFT JOIN
+            t_blog_type bty
+        on
+            b.blog_id = bty.blog_id
+        LEFT join
+            t_type ty
+        on
+            ty.type_id = bty.type_id
+        left join
             t_blog_user bu
         on
-            b.blog_id = bu.blog_id
-        LEFT JOIN
+            bu.blog_id = b.blog_id
+        left join
             t_user u
         on
-            bu.user_id = u.user_id
+            u.user_id = bu.user_id
         WHERE
             b.type_id = #{typeId}
     </select>
@@ -88,8 +133,76 @@
             </if>
         </where>
         order by
-        b.update_time
-        desc
+            b.update_time
+        asc
+    </select>
+    <select id="countAllBlogs" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            t_blog
+    </select>
+    <select id="getBlogById" resultMap="blog">
+        select
+            b.blog_id, b.title, b.content, b.first_picture,
+            b.description, b.flag, b.views, b.sharement, b.commentabled, b.published,
+            b.recommend, b.update_time,
+            t.type_id, t.type_name,
+            u.user_id, u.username, u.nickname, u.email, u.avatar, u.type as userType, u.update_time,
+            c.comment_id,  c.content as commentContent, c.create_time, c.parent_comment_id,
+            buc.user_id as commentUserId
+        from
+            t_blog b
+        left join
+            t_blog_type bty
+        on
+            b.blog_id = bty.blog_id
+        left join
+            t_type t
+        on
+            bty.type_id = t.type_id
+        left join
+            t_blog_user bu
+        on
+            bu.blog_id = b.blog_id
+        left join
+            t_user u
+        on
+            bu.user_id = u.user_id
+        left join
+            t_blog_user_comment buc
+        on
+            buc.blog_id = b.blog_id
+        left join
+            t_comment c
+        on
+            c.comment_id = buc.comment_id
+        where
+            b.blog_id = #{blogId}
+        order by
+            b.update_time
+        asc
+    </select>
+    <!--根据用户ID查询此用户的所有blog-->
+    <select id="listBlogsByUserId" resultMap="blog">
+        select from
+            t_blog b
+        left join
+            t_blog_type bty
+        on
+            bty.blog_id = b.blog_id
+        left join
+            t_type ty
+        on
+            bty.type_id = ty.type_id
+        left join
+            t_blog_user bu
+        on
+            bu.blog_id = b.blog_id
+        left join
+            bu.user_id = u.user_id
+        where
+            u.user_id = #{userId}
     </select>
 
     <!--新增操作-->
@@ -119,5 +232,22 @@
         where
             blog_id = #{blogId};
     </delete>
+
+    <!--更新操作-->
+    <update id="updateBlog" parameterType="com.zzy.cloudblogblog.entity.Blog">
+        update
+            t_blog
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="firstPicture != null">first_picture = #{firstPicture},</if>
+<!--            <if test="typeId != null">type_id = #{typeId},</if>-->
+            <if test="description != null">description = #{description},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="views != null">views = #{views},</if>
+        </set>
+        where
+            blog_id = #{blogId}
+    </update>
 
 </mapper>

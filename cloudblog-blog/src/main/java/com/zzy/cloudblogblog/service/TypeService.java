@@ -1,5 +1,6 @@
 package com.zzy.cloudblogblog.service;
 
+import com.zzy.cloudblogblog.dto.TypeDTO;
 import com.zzy.cloudblogblog.entity.Type;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface TypeService {
      * 查询所有博客类型
      * @return
      */
-    List<Type> listAllTypes();
+    List<TypeDTO> listAllTypes();
 
     /**
      * 根据主键查询博客类型

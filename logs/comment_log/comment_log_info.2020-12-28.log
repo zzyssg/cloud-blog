@@ -1,0 +1,13 @@
+2020-12-28 10:59:27.528 - [INFO ] - [org.springframework.boot.SpringApplication : logStartupProfileInfo : 651] - No active profile set, falling back to default profiles: default 
+2020-12-28 10:59:28.597 - [INFO ] - [org.springframework.cloud.context.scope.GenericScope : setSerializationId : 295] - BeanFactory id=f2772608-d7c1-3b2a-b5f6-552b6ad0c3e1 
+2020-12-28 10:59:29.935 - [INFO ] - [com.netflix.config.sources.URLConfigurationSource : <init> : 122] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath. 
+2020-12-28 10:59:29.966 - [INFO ] - [com.netflix.config.sources.URLConfigurationSource : <init> : 122] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath. 
+2020-12-28 10:59:30.395 - [INFO ] - [org.springframework.scheduling.concurrent.ExecutorConfigurationSupport : initialize : 181] - Initializing ExecutorService 'applicationTaskExecutor' 
+2020-12-28 10:59:32.673 - [INFO ] - [org.springframework.scheduling.concurrent.ExecutorConfigurationSupport : initialize : 181] - Initializing ExecutorService 'Nacso-Watch-Task-Scheduler' 
+2020-12-28 10:59:34.246 - [INFO ] - [tk.mybatis.mapper.autoconfigure.MapperCacheDisabler : removeStaticCache : 60] - Clear tk.mybatis.mapper.util.MsUtil CLASS_CACHE cache. 
+2020-12-28 10:59:34.248 - [INFO ] - [tk.mybatis.mapper.autoconfigure.MapperCacheDisabler : removeStaticCache : 60] - Clear tk.mybatis.mapper.genid.GenIdUtil CACHE cache. 
+2020-12-28 10:59:34.250 - [INFO ] - [tk.mybatis.mapper.autoconfigure.MapperCacheDisabler : removeStaticCache : 60] - Clear tk.mybatis.mapper.version.VersionUtil CACHE cache. 
+2020-12-28 10:59:34.253 - [INFO ] - [tk.mybatis.mapper.autoconfigure.MapperCacheDisabler : removeEntityHelperCache : 83] - Clear EntityHelper entityTableMap cache. 
+2020-12-28 10:59:34.292 - [INFO ] - [org.springframework.boot.StartupInfoLogger : logStarted : 61] - Started CloudblogCommentApplicationTests in 10.534 seconds (JVM running for 12.412) 
+2020-12-28 10:59:34.954 - [INFO ] - [org.springframework.scheduling.concurrent.ExecutorConfigurationSupport : shutdown : 218] - Shutting down ExecutorService 'Nacso-Watch-Task-Scheduler' 
+2020-12-28 10:59:34.960 - [INFO ] - [org.springframework.scheduling.concurrent.ExecutorConfigurationSupport : shutdown : 218] - Shutting down ExecutorService 'applicationTaskExecutor' 

@@ -1,7 +1,7 @@
 package com.zzy.cloudbloguser.service.impl;
 
 import com.zzy.cloudbloguser.dao.UserMapper;
-import com.zzy.cloudbloguser.entity.user.User;
+import com.zzy.cloudbloguser.entity.User;
 import com.zzy.cloudbloguser.enums.ResponseEnum;
 import com.zzy.cloudbloguser.exception.CommonException;
 import com.zzy.cloudbloguser.service.UserService;

@@ -16,7 +16,7 @@ public interface BlogService {
      * @param blogId
      * @return
      */
-    BlogDTO queryById(Integer blogId);
+    BlogDTO getBlogById(Integer blogId);
 
     /**
      * 更新博客时附加操作
@@ -81,4 +81,11 @@ public interface BlogService {
      * @return
      */
     Boolean deleteBlog(Blog blog);
+
+    /**
+     * 查询某用户的所有博客
+     * @param userId
+     * @return
+     */
+    List<Blog> listBlogsByUserId(Integer userId);
 }

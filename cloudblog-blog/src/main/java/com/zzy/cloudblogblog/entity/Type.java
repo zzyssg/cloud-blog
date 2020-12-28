@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author zzy
@@ -20,6 +22,7 @@ public class Type {
      * 博客类型ID
      */
     @Id
+    @GeneratedValue(generator = "JDBC")
     @Column(name = "type_id")
     private Integer typeId;
 
