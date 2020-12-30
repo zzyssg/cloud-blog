@@ -20,6 +20,7 @@
         <result column="recommend" jdbcType="BIT" property="recommend"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="commentCount"  property="commentCount"/>
         <association property="type" javaType="com.zzy.cloudblogblog.entity.Type">
             <id column="type_id" property="typeId" />
             <result column="type_name" property="typeName"/>
@@ -53,6 +54,8 @@
             u.user_id, u.username, u.nickname, u.email, u.avatar, u.type as userType, u.update_time,
             c.comment_id,  c.content as commentContent, c.create_time, c.parent_comment_id,
             buc.user_id as commentUserId
+<!--        ,
+            count(c.comment_id) as commentCount-->
         from
             t_blog b
         left join

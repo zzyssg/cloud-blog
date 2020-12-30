@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.zzy.cloudblogblog.dao.BlogMapper;
 import com.zzy.cloudblogblog.dao.BlogRocketmqTransactionLogMapper;
 import com.zzy.cloudblogblog.dao.TypeMapper;
+import com.zzy.cloudblogblog.dto.BlogArchiveDTO;
 import com.zzy.cloudblogblog.dto.BlogDTO;
 import com.zzy.cloudblogblog.entity.*;
 import com.zzy.cloudblogblog.enums.ResponseEnum;
@@ -326,6 +327,42 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public List<Blog> listBlogsByUserId(Integer userId) {
         return blogMapper.listBlogsByUserId(userId);
+    }
+
+    /**
+     * 查询当前年份的所有博客
+     *
+     * @return
+     */
+    @Override
+    public List<BlogArchiveDTO> listAllBlogsByYear() {
+        List<BlogArchiveDTO> result = new ArrayList<>();
+        List<Blog> allBlogs = listAllBlogs();
+        //按照年份划分blog
+        Map<Integer, ArrayList<Blog>> blogMap = new TreeMap<>();
+        Calendar c = Calendar.getInstance();
+        for(Blog blog : allBlogs){
+            // 得到每个博客的年份
+            c.setTime(blog.getUpdateTime());
+            Integer curYear = c.get(Calendar.YEAR);
+            if (!blogMap.containsKey(curYear.intValue())) {
+                ArrayList<Blog> blogListOfYear = new ArrayList<>();
+                blogListOfYear.add(blog);
+                blogMap.put(curYear, blogListOfYear);
+            } else {
+                blogMap.get(curYear.intValue()).add(blog);
+            }
+
+        }
+        // 遍历map，将map转为 list ——key为curYear，value 为blogList
+        for(Integer year : blogMap.keySet()){
+            BlogArchiveDTO blogArchiveDTO = new BlogArchiveDTO(year,blogMap.get(year));
+            result.add(blogArchiveDTO);
+        }
+        if (result == null) {
+            log.info("博客为空!");
+        }
+        return result;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.zzy.cloudblogblog.service;
 
+import com.zzy.cloudblogblog.dto.BlogArchiveDTO;
 import com.zzy.cloudblogblog.dto.BlogDTO;
 import com.zzy.cloudblogblog.entity.Blog;
 
@@ -88,4 +89,10 @@ public interface BlogService {
      * @return
      */
     List<Blog> listBlogsByUserId(Integer userId);
+
+    /**
+     * 查询当前年份的所有博客
+     * @return
+     */
+    List<BlogArchiveDTO> listAllBlogsByYear();
 }

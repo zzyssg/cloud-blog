@@ -1,5 +1,6 @@
 package com.zzy.cloudblogblog.controller;
 
+import com.zzy.cloudblogblog.dto.BlogArchiveDTO;
 import com.zzy.cloudblogblog.dto.BlogDTO;
 import com.zzy.cloudblogblog.dto.TypeDTO;
 import com.zzy.cloudblogblog.entity.Blog;
@@ -12,6 +13,7 @@ import com.zzy.cloudblogblog.service.TypeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -144,6 +146,7 @@ public class BlogController {
      * @return
      */
     @GetMapping("/queryBlogById/{blogId}")
+    @Transactional(rollbackFor = Exception.class)
     public ResponseBean queryBlogById(@PathVariable Long blogId) {
         ResponseBean result;
         Blog blogById = blogService.getBlogById(blogId);
@@ -153,11 +156,22 @@ public class BlogController {
                     ResponseEnum.BLOG_ONID_IS_NULL.getMsg());
         }
         //TODO 将浏览量 + 1，更新blog
-
+        blogById.setViews(blogById.getViews() + 1);
+        blogService.updateBlog(blogById);
         return new ResponseBean(ResponseEnum.RESPONSE_SUCCESS.getCode(),
                 ResponseEnum.RESPONSE_SUCCESS.getMsg(),
                 blogById);
 
+    }
+
+    @GetMapping("/findAllBlogsByYear")
+    public ResponseBean findAllBlogsByYear(){
+        ResponseBean result;
+        List<BlogArchiveDTO> blogArchiveDTOS = blogService.listAllBlogsByYear();
+        result = new ResponseBean(ResponseEnum.RESPONSE_SUCCESS.getCode(),
+                ResponseEnum.RESPONSE_SUCCESS.getMsg(),
+                blogArchiveDTOS);
+        return result;
     }
 
     /**

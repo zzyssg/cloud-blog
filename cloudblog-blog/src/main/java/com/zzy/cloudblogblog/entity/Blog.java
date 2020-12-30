@@ -116,4 +116,9 @@ public class Blog {
      */
     private List<Comment> comments;
 
+    /**
+     * 评论总数
+     */
+    private Integer commentCount;
+
 }
